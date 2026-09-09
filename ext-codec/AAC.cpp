@@ -373,11 +373,7 @@ Track::Ptr AACTrack::clone() const {
 }
 
 Sdp::Ptr AACTrack::getSdp(uint8_t payload_type) const {
-    if (!ready()) {
-        WarnL << getCodecName() << " Track未准备好";
-        return nullptr;
-    }
-    return std::make_shared<AACSdp>(getExtraData()->toString(), payload_type, getAudioSampleRate(), getAudioChannel(), getBitRate() / 1024);
+    return std::make_shared<AACSdp>(getExtraData()->toString(), payload_type, getAudioSampleRate(), getAudioChannel(), getBitRate() >> 10);
 }
 
 namespace {
@@ -399,6 +395,12 @@ Track::Ptr getTrackBySdp(const SdpTrack::Ptr &track) {
         // 如果sdp中获取不到aac config信息，那么在rtp也无法获取，那么忽略该Track  [AUTO-TRANSLATED:995bc20d]
         // If aac config information cannot be obtained from sdp, then it cannot be obtained from rtp either, so ignore this Track
         return nullptr;
+    }
+    while (aac_cfg_str.size() < 4) {
+        aac_cfg_str = '0' + aac_cfg_str;
+    }
+    if (aac_cfg_str.size() > 4) {
+        aac_cfg_str = aac_cfg_str.substr(0, 4);
     }
     string aac_cfg;
     for (size_t i = 0; i < aac_cfg_str.size() / 2; ++i) {

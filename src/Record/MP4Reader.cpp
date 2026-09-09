@@ -54,7 +54,7 @@ void MP4Reader::setup(const MediaTuple &tuple, const std::string &file_path, con
         _file_path = File::absolutePath(_file_path, recordPath);
     }
 
-    _demuxer = std::make_shared<MP4Demuxer>();
+    _demuxer = std::make_shared<MultiMP4Demuxer>();
     _demuxer->openMP4(_file_path);
 
     if (tuple.stream.empty()) {
@@ -164,7 +164,7 @@ void MP4Reader::startReadMP4(uint64_t sample_ms, bool ref_self, bool file_repeat
     _file_repeat = file_repeat;
 }
 
-const MP4Demuxer::Ptr &MP4Reader::getDemuxer() const {
+const MultiMP4Demuxer::Ptr &MP4Reader::getDemuxer() const {
     return _demuxer;
 }
 
@@ -173,15 +173,9 @@ uint32_t MP4Reader::getCurrentStamp() {
 }
 
 void MP4Reader::setCurrentStamp(uint32_t new_stamp) {
-    auto old_stamp = getCurrentStamp();
     _seek_to = new_stamp;
     _last_dts = new_stamp;
     _seek_ticker.resetTime();
-    if (old_stamp != new_stamp && _muxer) {
-        // 时间轴未拖动时不操作  [AUTO-TRANSLATED:c5b53103]
-        // Do not operate when the timeline is not dragged
-        _muxer->setTimeStamp(new_stamp);
-    }
 }
 
 bool MP4Reader::seekTo(MediaSource &sender, uint32_t stamp) {

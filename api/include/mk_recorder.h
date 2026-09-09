@@ -12,6 +12,7 @@
 #define MK_RECORDER_API_H_
 
 #include "mk_common.h"
+#include "mk_util.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -123,6 +124,33 @@ API_EXPORT int API_CALL mk_recorder_start(int type, const char *vhost, const cha
  * [AUTO-TRANSLATED:df1638e7]
  */
 API_EXPORT int API_CALL mk_recorder_stop(int type, const char *vhost, const char *app, const char *stream);
+
+
+
+/**
+ * 开始事件视频录制
+ * @param vhost 虚拟主机
+ * @param app 应用名
+ * @param stream 流id
+ * @param path 录像文件保存相对路径，包括名称
+ * @param back_ms 回溯录制时长
+ * @param forward_ms 后续录制时长
+ * @return 1:成功，0：失败
+ * */
+API_EXPORT int API_CALL mk_recorder_start_task(const char *vhost, const char *app, const char *stream, const char *path, uint32_t back_ms, uint32_t forward_ms);
+
+
+/**
+ * 加载mp4列表
+ * @param vhost 虚拟主机
+ * @param app app
+ * @param stream 流id
+ * @param file_path 文件路径
+ * @param file_repeat 循环解复用
+ * @param ini 配置
+ */
+API_EXPORT void API_CALL mk_load_mp4_file(const char *vhost, const char *app, const char *stream, const char *file_path, int file_repeat);
+API_EXPORT void API_CALL mk_load_mp4_file2(const char *vhost, const char *app, const char *stream, const char *file_path, int file_repeat, mk_ini ini);
 
 #ifdef __cplusplus
 }
